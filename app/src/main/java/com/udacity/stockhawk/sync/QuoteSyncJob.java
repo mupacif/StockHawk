@@ -8,9 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
+import com.udacity.stockhawk.mock.MockUtils;
+import com.udacity.stockhawk.ui.MainActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,15 +77,29 @@ public final class QuoteSyncJob {
 
 
                 Stock stock = quotes.get(symbol);
+                if(stock == null) {
+                    Log.e("job","error:"+symbol+" doesn't exist");
+                    break;
+                }
                 StockQuote quote = stock.getQuote();
+
 
                 float price = quote.getPrice().floatValue();
                 float change = quote.getChange().floatValue();
                 float percentChange = quote.getChangeInPercent().floatValue();
 
+
                 // WARNING! Don't request historical data for a stock that doesn't exist!
                 // The request will hang forever X_x
-                List<HistoricalQuote> history = stock.getHistory(from, to, Interval.WEEKLY);
+                // List<HistoricalQuote> history = stock.getHistory(from, to, Interval.WEEKLY);
+
+
+
+                //note for reviewer:
+                //Due to the problem with Yahoo API we have commented the line aboce
+                //and included this one to fetch from MockUtils
+                //this should be enough as to develop and review wile the API is downs
+                List<HistoricalQuote> history = MockUtils.getHistory();
 
                 StringBuilder historyBuilder = new StringBuilder();
 
